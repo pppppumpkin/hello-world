@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qunar.fresh.dao.EmployeeInfoDao">
+
+    <sql id="selectFields">
+        id as id ,
+        employee_id as employeeId ,
+        qtalk_id as qtalkId ,
+        employee_name as employeeName ,
+        phone_number as phoneNumber ,
+        work_place as workPlaceEnum ,
+        sex as sexEnum ,
+        active as state
+    </sql>
+
+    <insert id="insertEmployeeInfo" parameterType="EmployeeInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into employee_info
+        (
+        employee_id,
+        qtalk_id,
+        employee_name,
+        phone_number,
+        work_place,
+        sex,
+        active
+        )values(
+        #{employeeId},
+        #{qtalkId},
+        #{employeeName},
+        #{phoneNumber},
+        #{workPlaceEnum},
+        #{sexEnum},
+        #{state}
+        )
+    </insert>
+
+    <insert id="batchInsertEmployeeInfos" parameterType="java.util.List">
+        insert into employee_info
+        (
+        employee_id,
+        qtalk_id,
+        employee_name,
+        phone_number,
+        work_place,
+        sex,
+        active
+        )values
+        <foreach collection="list" item="employeeInfo" separator=",">
+            (
+            #{employeeInfo.employeeId},
+            #{employeeInfo.qtalkId},
+            #{employeeInfo.employeeName},
+            #{employeeInfo.phoneNumber},
+            #{employeeInfo.workPlaceEnum},
+            #{employeeInfo.sexEnum},
+            #{employeeInfo.state}
+            )
+        </foreach>
+    </insert>
+
+    <select id="selectEmployeeInfoByEmployeeId" resultType="EmployeeInfo">
+        select
+        <include refid="selectFields"/>
+        from employee_info
+        where employee_id = #{employeeId}
+    </select>
+
+    <select id="selectEmployeeInfoByQtalkId" parameterType="String" resultType="EmployeeInfo">
+        select
+        id as id,
+        employee_id as employeeId,
+        qtalk_id as qtalkId,
+        employee_name as employeeName,
+        phone_number as phoneNumber,
+        work_place as workPlace,
+        sex as sex,
+        active as state
+        from
+        employee_info
+        where qtalk_id = #{qtalkId}
+    </select>
+
+    <!--List<EmployeeInfo> queryByWorkPlaceAndSex(@Param("workPlace") String workPlace, @Param("sex") Integer sex);-->
+    <select id="selectByWorkPlaceAndSex" resultMap="employeeInfoResultMap">
+        select
+        id as id,
+        employee_id as employeeId,
+        qtalk_id as qtalkId,
+        employee_name as employeeName,
+        phone_number as phoneNumber,
+        work_place as workPlace,
+        sex as sex,
+        active as state
+        from
+        employee_info
+        where work_place = #{workPlace} and sex = #{sex}
+    </select>
+
+    <select id="selectEmployeeInfoByCondition" parameterType="map" resultType="EmployeeInfo">
+        select
+        <include refid="selectFields"/>
+        from employee_info
+        <where>
+            <if test="workPlaceEnumList != null and workPlaceEnumList.size() > 0">
+                and work_place in
+                <foreach collection="workPlaceEnumList" item="workPlaceEnum" close=")" open="(" separator=",">
+                    #{workPlaceEnum}
+                </foreach>
+            </if>
+            <if test="sexEnumList != null and sexEnumList.size() > 0">
+                and sex in
+                <foreach collection="sexEnumList" item="sexEnum" close=")" open="(" separator=",">
+                    #{sexEnum}
+                </foreach>
+            </if>
+            <if test="employeeId != null and employeeId != ''">
+                and employee_id = #{employeeId}
+            </if>
+        </where>
+
+    </select>
+
+    <!--int updatePhoneNumByEmployeeId(@Param("employeeId") Integer employeeId, @Param("phoneNum") String phoneNum);-->
+    <update id="updatePhoneNumberByEmployeeId" >
+        update
+        employee_info
+        set
+        phone_number = #{phoneNumber}
+        where employee_id = #{employeeId}
+    </update>
+
+    <!--int deleteInactiveEmployeeInfo();-->
+    <delete id="deleteInactiveEmployeeInfo">
+        delete from employee_info where active = false
+    </delete>
+
+    <select id="selectEmployeeInfoByWorkPlace" resultType="EmployeeInfo">
+        select
+        <include refid="selectFields"/>
+        from employee_info
+        where work_place in
+        <foreach collection="workPlaceEnumList" item="workPlaceEnum" close=")" open="(" separator=",">
+            #{workPlaceEnum}
+        </foreach>
+    </select>
+
+    <resultMap id="employeeInfoResultMap" type="EmployeeInfo">
+        <id column="id" property="id"/>
+        <result column="employee_id" property="employeeId"/>
+        <result column="qtalk_id" property="qtalkId"/>
+        <result column="employee_name" property="employeeName"/>
+        <result column="phone_number" property="phoneNumber"/>
+        <result column="work_place" property="workPlace"/>
+        <result column="sex" property="sex"/>
+        <result column="active" property="state"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,3 @@
+curl -d "username=liying.song&password=123" http://l-marmot3.wap.cn6.qunar.com:8080/user/register
+curl -d "name=liying.song&password=123" http://l-marmot3.wap.cn6.qunar.com:8080/user/login -c cookie
+curl -F "file=@homework_linux" -b ./cookie http://l-marmot3.wap.cn6.qunar.com:8080/user/homework

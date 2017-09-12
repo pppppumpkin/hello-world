@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 本配置文件供名为mvc-dispatcher的DispatcherServlet使用，提供相关的Spring MVC配置 -->
+    <!--<import resource="classpath:jdbcTemplate.xml"/>-->
+
+    <!-- 启动Spring基于annotation的DI -->
+    <context:annotation-config/>
+
+    <!-- DispatcherServlet上下文，只管理@Controller类型的bean，忽略其他类型的bean -->
+    <context:component-scan base-package="com.qunar.fresh" >
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+    </context:component-scan>
+
+    <!-- HandlerMapping无需配置，Spring MVC默认启动DefaultAnnotationHandlerMapping -->
+
+    <!-- 让DispatcherServlet启用基于annotation的HandlerMapping -->
+    <!-- 扩充了注解驱动，可以将请求参数绑定到控制器参数 -->
+    <!--<mvc:annotation-driven conversion-service="myDateFormatter"/>-->
+    <!--<mvc:annotation-driven conversion-service="myDateConverter"/>-->
+
+    <!-- 静态资源处理：css，js，imgs -->
+    <!--<mvc:resources mapping="/resources/**" location="/resources/"/>-->
+
+    <!--aop自动扫描-->
+    <!--<aop:aspectj-autoproxy proxy-target-class="true"/>-->
+
+    <!--<bean id="myDateFormatter" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">-->
+        <!--<property name="formatters">-->
+            <!--<set>-->
+                <!--<bean class="com.qunar.fresh.common.MyDateFormatter"></bean>-->
+            <!--</set>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean id="myDateConverter" class="org.springframework.format.support.FormattingConversionServiceFactoryBean">-->
+        <!--<property name="converters">-->
+            <!--<set>-->
+                <!--<bean class="com.qunar.fresh.common.MyDateConverter"></bean>-->
+            <!--</set>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1024"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <bean id="account" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:account.properties</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置ViewResolver，可以用多个ViewResolver，用order属性排序 -->
+    <!-- InternalResourcesViewResolver放在最后，因为它必定会返回一个对象 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+        <!-- 用前缀和后缀拼接成jsp文件 -->
+        <property name="prefix" value="/WEB-INF/jsps/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

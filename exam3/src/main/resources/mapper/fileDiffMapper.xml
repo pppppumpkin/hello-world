@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qunar.fresh.dao.FileDiffDao">
+
+    <sql id="selectFields">
+        id as id ,
+        user_name as userName ,
+        diff_time as diffTime ,
+        source_file as sourceFile ,
+        target_file as targetFile ,
+        result_file as resultFile
+    </sql>
+
+    <insert id="insertDiffResultModel" parameterType="DiffResultModel" useGeneratedKeys="true" keyProperty="id">
+        insert into diff_result
+        (
+        user_name,
+        source_file,
+        target_file,
+        result_file
+        )values(
+        #{userName},
+        #{sourceFile},
+        #{targetFile},
+        #{resultFile}
+        )
+    </insert>
+
+    <select id="selectDiffResultModelForPageOrderByDiffTime" resultMap="diffResultModelResultMap">
+        select
+        <include refid="selectFields"/>
+        from
+        diff_result
+        order by diff_time desc
+    </select>
+
+    <select id="selectDiffResultModelOrderByDiffTime" resultMap="diffResultModelResultMap">
+        select
+        <include refid="selectFields"/>
+        from
+        diff_result
+        order by diff_time desc
+    </select>
+
+    <select id="selectDiffResultModelById" resultMap="diffResultModelResultMap">
+        select <include refid="selectFields"/> from diff_result where id = #{id}
+    </select>
+
+    <!--int deleteInactiveEmployeeInfo();-->
+    <delete id="deleteDiffResultModelById">
+        delete from diff_result
+        where id = #{id}
+    </delete>
+
+    <resultMap id="diffResultModelResultMap" type="DiffResultModel">
+        <id column="id" property="id"/>
+        <result column="user_name" property="userName"/>
+        <result column="diff_time" property="diffTime"/>
+        <result column="source_file" property="sourceFile"/>
+        <result column="target_file" property="targetFile"/>
+        <result column="result_file" property="resultFile"/>
+    </resultMap>
+</mapper>
